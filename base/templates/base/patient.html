@@ -1,0 +1,314 @@
+{% extends 'index.html' %} {% block content %}
+{% if request.user.id == pk or request.user.role == 'staff' %}
+{% if request.user.role == 'staff' %}
+<h1>{{patient.username}}</h1>
+{% endif %}
+<div class="container mt-5">
+  {% for key, val in data.items %}
+  <div class="accordion w-75 mx-auto" id="{{key}}1">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="{{key}}-head">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{key}}"
+          aria-expanded="false" aria-controls="{{key}}">
+          <strong>{{key}}: </strong>
+          {% if val != '-' %}
+          <h1>{{val}}</h1>
+          <br>
+          <span>({{val.created|timesince}} ago)</span>
+
+        </button>
+      </h2>
+      <div id="{{key}}" class="accordion-collapse collapse" aria-labelledby="{{key}}-head">
+        <div class="accordion-body">
+          <canvas id="myChart{{forloop.counter}}"></canvas>
+        </div>
+      </div>
+      {% else %}
+      <h1>There are no values!</h1>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+
+
+
+  <!-- <div class="accordion w-75 mx-auto" id="Respiration">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="respiration-head">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#respiration"
+          aria-expanded="false" aria-controls="respiration">
+          <strong>Respiration: </strong>
+          <h1>{{respl.value}}</h1>
+          <br>
+          <span>({{respl.created|timesince}} ago)</span>
+        </button>
+      </h2>
+      <div id="respiration" class="accordion-collapse collapse" aria-labelledby="respiration-head">
+        <div class="accordion-body">
+          <canvas id="myChart2"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="accordion w-75 mx-auto" id="Pulse">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="pulse-head">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#pulse"
+          aria-expanded="false" aria-controls="pulse">
+          <strong>Pulse: </strong>
+          <h1>{{pulsel.value}}</h1>
+          <br>
+          <span>({{pulsel.created|timesince}} ago)</span>
+        </button>
+      </h2>
+      <div id="pulse" class="accordion-collapse collapse" aria-labelledby="pulse-head">
+        <div class="accordion-body">
+          <canvas id="myChart3"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="accordion w-75 mx-auto" id="Humidity">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="humidity-head">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#humidity"
+          aria-expanded="false" aria-controls="humidity">
+          <strong>Humidity: </strong>
+          <h1>{{huml.value}}</h1>
+          <br>
+          <span>({{huml.created|timesince}} ago)</span>
+        </button>
+      </h2>
+      <div id="humidity" class="accordion-collapse collapse" aria-labelledby="humidity-head">
+        <div class="accordion-body">
+          <canvas id="myChart4"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="accordion w-75 mx-auto" id="Spo2">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="spo2-head">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#spo2"
+          aria-expanded="false" aria-controls="spo2">
+          <strong>SPO2: </strong>
+          <h1>{{spo2l.value}}</h1>
+          <br>
+          <span>({{spo2l.created|timesince}} ago)</span>
+        </button>
+      </h2>
+      <div id="spo2" class="accordion-collapse collapse" aria-labelledby="spo2-head">
+        <div class="accordion-body">
+          <canvas id="myChart5"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="accordion w-75 mx-auto" id="Nibpd">
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="nibpd-head">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#nibpd"
+          aria-expanded="false" aria-controls="nibpd">
+          <strong>NIBPD: </strong>
+          <h1>{{nibpdl.value}}</h1>
+          <br>
+          <span>({{nibpdl.created|timesince}} ago)</span>
+        </button>
+      </h2>
+      <div id="nibpd" class="accordion-collapse collapse" aria-labelledby="nibpd-head">
+        <div class="accordion-body">
+          <canvas id="myChart6"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script> -->
+</div>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const ctx1 = document.getElementById("myChart1").getContext("2d");
+  const ctx2 = document.getElementById("myChart2").getContext("2d");
+  const ctx3 = document.getElementById("myChart3").getContext("2d");
+  const ctx4 = document.getElementById("myChart4").getContext("2d");
+  const ctx5 = document.getElementById("myChart5").getContext("2d");
+  const ctx6 = document.getElementById("myChart6").getContext("2d");
+
+  var labels, datas;
+  let chart1 = new Chart(ctx1, {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "Date Time",
+          data: datas,
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+  let chart2 = new Chart(ctx2, {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "Date Time",
+          data: datas,
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+  let chart3 = new Chart(ctx3, {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "Date Time",
+          data: datas,
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+  let chart4 = new Chart(ctx4, {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "Date Time",
+          data: datas,
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+  let chart5 = new Chart(ctx5, {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "Date Time",
+          data: datas,
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+  let chart6 = new Chart(ctx6, {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "Date Time",
+          data: datas,
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+  const updateData = function () {
+    $.ajax({
+      url: "/api/chart/data/{{pk}}",
+      success: function (data) {
+        console.log(data);
+        labels = data.tlabels;
+        datas = data.temperature;
+        chart1.data.labels = labels.reverse();
+        chart1.data.datasets[0].data = datas.reverse();
+        chart1.update();
+
+        labels = data.rlabels;
+        datas = data.respiration;
+        chart2.data.labels = labels.reverse();
+        chart2.data.datasets[0].data = datas.reverse();
+        chart2.update();
+
+        labels = data.plabels;
+        datas = data.pulse;
+        chart3.data.labels = labels.reverse();
+        chart3.data.datasets[0].data = datas.reverse();
+        chart3.update();
+
+        labels = data.hlabels;
+        datas = data.humidity;
+        chart4.data.labels = labels.reverse();
+        chart4.data.datasets[0].data = datas.reverse();
+        chart4.update();
+
+        labels = data.slabels;
+        datas = data.spo2;
+        chart5.data.labels = labels.reverse();
+        chart5.data.datasets[0].data = datas.reverse();
+        chart5.update();
+
+        labels = data.nlabels;
+        datas = data.nibpd;
+        chart6.data.labels = labels.reverse();
+        chart6.data.datasets[0].data = datas.reverse();
+        chart6.update();
+      },
+      error: function (error) {
+        console.log(error);
+      },
+    });
+  };
+  //updateData();
+  setInterval(function () {
+    updateData();
+  }, 1000);
+</script>
+{% else %}
+<h1>You are not alowed here!!!</h1>
+<br />
+{% endif %} {% endblock content %}

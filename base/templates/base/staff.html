@@ -1,0 +1,46 @@
+{% extends 'index.html' %}
+{% block content %}
+{% if request.user.role == 'staff' %}
+<div class="container mt-4 mb-4">
+  <h1 class="text-center">Patients data</h1>
+</div>
+<div class="container mt-5">
+  <div class="accordion w-75 mx-auto" id="accordionPanelsStayOpenExample">
+    {% for key, val in data.items %}
+    <div class="accordion-item">
+      <h2 class="accordion-header" id="panelsStayOpen-heading{{forloop.counter}}">
+        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+          data-bs-target="#panelsStayOpen-collapse{{forloop.counter}}" aria-expanded="false"
+          aria-controls="panelsStayOpen-collapse{{forloop.counter}}">
+          {{key}}
+        </button>
+      </h2>
+      <div id="panelsStayOpen-collapse{{forloop.counter}}" class="accordion-collapse collapse"
+        aria-labelledby="panelsStayOpen-heading{{forloop.counter}}">
+        <div class="accordion-body">
+          {% for key1, val1 in val.items %}
+          <strong>{{key1}}: </strong>
+          {% if val1 == 'No data' %}
+          <h1>{{val1}}</h1>
+          {% else %}
+          <h1>{{val1.value}}</h1>
+          {% endif %}
+
+          {% endfor %}
+          {% for patient in patients %}
+          {% if patient.username == key %}
+          <a href="{% url 'patient' patient.id %}">more</a>
+          {{ "<!--" }}
+            {%endif%} 
+          {%endfor%}     
+          {{ "-->" }}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% else %}
+<h1>You have no permission here</h1>
+{% endif %}
+{% endblock content %}
